@@ -33,16 +33,16 @@ syllable1(S) --> syllable_body(S).
 syllable_body([V,N]) --> vowel(V), nasal(N).
 syllable_body([V]) --> vowel(V).
 
-word(Word) --> syllable(Word).
-word(Word) --> syllable(W), word(W1), { atom_concat(W, W1, Word) }.
+wordgloss(Word) --> syllable(Word).
+wordgloss(Word) --> syllable(W), wordgloss(W1), { atom_concat(W, W1, Word) }.
 
 
 %% grammar
 %% taken from http://en.wikipedia.org/wiki/Toki_Pona#Syntax
 
-sentence --> interjection.
-sentence --> optional_subclause, optional_vocative, subject, predicate.
-sentence --> optional_subclause, vocative, predicate.
+sentence(vocative(Target, Predicate)) --> optional_subclause, vocative(Target), predicate(Predicate).
+sentence(interjection(I)) --> interjection(I).
+sentence(subject) --> optional_subclause, optional_vocative, subject, predicate(_).
 
 interjection(a). 
 interjection(ala). 
@@ -54,39 +54,43 @@ interjection(pakala).
 interjection(pona). 
 interjection(toki).
 
-interjection --> [A], { interjection(A) }.
+interjection(I) --> [I], { interjection(I) }.
 
 optional_subclause --> [].
 optional_subclause --> subclause.
 
-subclause --> [taso], sentence, [la].
-subclause --> [taso], noun, phrase, [la].
+subclause --> [taso], sentence(_), [la].
+subclause --> [taso], noun_phrase(_), [la].
 
 optional_vocative --> [].
-optional_vocative --> noun_phrase, [o].
+optional_vocative --> vocative(_).
+
+vocative(Target) --> noun_phrase(Target), [o].
 
 subject --> [mi].
 subject --> [sina].
-subject --> noun_phrase, [li].
+subject --> noun_phrase(_), [li].
 
-predicate --> simple_noun_phrase, multiple_optional_prepositional_phrases.
-predicate --> verb_phrase, optional_prepositional_phrase.
-predicate --> predicate, conjuction, predicate.
+predicate(noun) --> noun_phrase(_), multiple_optional_prepositional_phrases(_).
+predicate(verb) --> verb_phrase, optional_prepositional_phrase(_).
+predicate(conjunction) --> predicate(_), conjunction(_), predicate(_).
 
-noun_phrase --> noun, multiple_optional_modifiers.
-noun_phrase --> simple_noun_phrase, [pi], noun_phrase.
-noun_phrase --> noun_phrase, conjunction, noun_phrase.
+noun_phrase(pi(SimpleNoun, NounPhrase)) --> simple_noun_phrase(SimpleNoun), [pi], noun_phrase(NounPhrase).
+noun_phrase(conj(C, LeftNounPhrase, RightNounPhrase)) --> simple_noun_phrase(LeftNounPhrase), conjunction(C), noun_phrase(RightNounPhrase).
+noun_phrase(SimpleNoun) --> simple_noun_phrase(SimpleNoun).
 
-multiple_optional_modifiers --> [].
-multiple_optional_modifiers --> modifier, multiple_optional_modifiers.
+simple_noun_phrase(noun(Noun, Modifiers)) --> noun(Noun), multiple_optional_modifiers(Modifiers).
 
-conjunction --> [anu].
-conjunction --> [en].
+multiple_optional_modifiers([]) --> [].
+multiple_optional_modifiers([M|Ms]) --> modifier(M), multiple_optional_modifiers(Ms).
 
-multiple_optional_prepositional_phrases --> [].
-multiple_optional_prepositional_phrases --> prepositional_phrase, multiple_optional_prepositional_phrases.
+multiple_optional_prepositional_phrases([]) --> [].
+multiple_optional_prepositional_phrases([PP|PPs]) --> prepositional_phrase(PP), multiple_optional_prepositional_phrases(PPs).
 
-prepositional_phrase --> preposition, noun_phrase.
+optional_prepositional_phrase([]) --> [].
+optional_prepositional_phrase([PP]) --> prepositional_phrase(PP).
+
+prepositional_phrase(pp(P, NP)) --> preposition(P), noun_phrase(NP).
 
 verb_phrase --> verbal.
 verb_phrase --> modal, verbal.
@@ -97,9 +101,265 @@ modal --> [kama].
 modal --> [ken].
 modal --> [wile].
 
-verbal --> verb, multiple_optional_modifiers.
-verbal --> verb, multiple_optional_modifiers, direct_object.
-verbal --> [lon], simple_noun_phrase.
-verbal --> [tawa], simple_noun_phrase.
+verbal --> verb, multiple_optional_modifiers(_).
+verbal --> verb, multiple_optional_modifiers(_), direct_object.
+verbal --> [lon], simple_noun_phrase(_).
+verbal --> [tawa], simple_noun_phrase(_).
 
-direct_object --> [e], simple_noun_phrase.
+direct_object --> [e], simple_noun_phrase(_).
+
+% these are imprecise and should be addressed
+verb --> [X], { wordgloss(X, _) }.
+noun(X) --> [X], { wordgloss(X, _) }.
+modifier(X) --> [X], { modifier(X) }.
+preposition(P) --> [P], { preposition(P) }.
+
+conjunction(X) --> [X], { conjunction(X) }.
+
+%% conjunctions
+conjunction(anu).
+conjunction(en).
+
+%% modifiers
+modifier(ala).
+modifier(anpa).
+modifier(akesi).
+modifier(ale).
+modifier(ante).
+modifier(awen).
+modifier(ijo).
+modifier(ike).
+modifier(insa).
+modifier(jaki).
+modifier(jan).
+modifier(jelo).
+modifier(jo).
+modifier(kala).
+modifier(kalama).
+modifier(kama).
+modifier(kasi).
+modifier(kili).
+modifier(kin).
+modifier(kiwen).
+modifier(ko).
+modifier(kon).
+modifier(kule).
+modifier(kulupu).
+modifier(kute).
+modifier(lape).
+modifier(laso).
+modifier(lawa).
+modifier(len).
+modifier(lete).
+modifier(lili).
+modifier(linja).
+modifier(lipu).
+modifier(loje).
+modifier(lon).
+modifier(luka).
+modifier(lukin).
+modifier(lupa).
+modifier(ma).
+modifier(mama).
+modifier(mani).
+modifier(meli).
+modifier(mi).
+modifier(mije).
+modifier(moku).
+modifier(moli).
+modifier(monsuta).
+modifier(mun).
+modifier(musi).
+modifier(mute).
+modifier(namako).
+modifier(nasa).
+modifier(nasin).
+modifier(nena).
+modifier(nimi).
+modifier(noka).
+modifier(oko).
+modifier(olin).
+modifier(open).
+modifier(pakala).
+modifier(pali).
+modifier(palisa).
+modifier(pan).
+modifier(pana).
+modifier(pilin).
+modifier(pimeja).
+modifier(pini).
+modifier(pipi).
+modifier(poka).
+modifier(poki).
+modifier(pona).
+modifier(sama).
+modifier(seli).
+modifier(selo).
+modifier(sewi).
+modifier(sijelo).
+modifier(sike).
+modifier(sin).
+modifier(sinpin).
+modifier(sitelen).
+modifier(sona).
+modifier(soweli).
+modifier(suli).
+modifier(suno).
+modifier(supa).
+modifier(suwi).
+modifier(tan).
+modifier(taso).
+modifier(tawa).
+modifier(telo).
+modifier(tenpo).
+modifier(toki).
+modifier(tomo).
+modifier(tu).
+modifier(unpa).
+modifier(uta).
+modifier(utala).
+modifier(walo).
+modifier(wan).
+modifier(waso).
+modifier(wawa).
+modifier(weka).
+modifier(wile).
+
+%% prepositions
+preposition(anpa).
+preposition(insa).
+preposition(jo).
+preposition(lon).
+preposition(poka).
+preposition(selo).
+preposition(sewi).
+preposition(sinpin).
+preposition(tan).
+preposition(tawa).
+
+%% wordgloss(word, gloss)
+wordgloss(a, "ah!, ha!, uh!, oh!, ooh!, aw!, well!").
+wordgloss(ala, "no, not, none, un-, opposite of, nothing, zero, no!").
+wordgloss(anpa, "down, bottom, lower part, under, below, floor, beneath, low").
+wordgloss(e, "separator, introduces the direct object").
+wordgloss(anu, "or").
+wordgloss(en, "and (joins together two nouns)").
+wordgloss(ken, "can, is able to, is allowed to, may, possibility, to make possible, it is possible that").
+wordgloss(akesi, "non-cute animal, reptile, amphibian, creeping animal, large arthropod").
+wordgloss(alasa, "to gather, to hunt, to collect food, to gather, to harvest").
+wordgloss(ale, "everything, anything, life, the universe, all, every, complete, whole").
+wordgloss(ali, "everything, anything, life, the universe, all, every, complete, whole").
+wordgloss(ante, "difference, different, otherwise, or else, to change, to alter, to modify").
+wordgloss(awen, "to stay, to wait, to remain, stationary, permanent, sedentary").
+wordgloss(esun, "market, shop").
+wordgloss(ijo, "thing, something, stuff, anything, object, of something, to objectify").
+wordgloss(ike, "bad, overly complex, evil, to worsen, to have a negative effect on, oh dear!, alas!").
+wordgloss(ilo, "tool, device, machine, thing to be used for a specific purpose").
+wordgloss(insa, "inside, inner world, center, stomach, internal").
+wordgloss(jaki, "dirty, gross, filthy, dirt, pollution, garbage, filth, to pollute, to dirty, ew!, yuck!").
+wordgloss(jan, "person, people, human, somebody, personal, to personify, to personalize").
+wordgloss(jelo, "yellow, light green").
+wordgloss(jo, "to have, to contain, having").
+wordgloss(kala, "fish, sea creature").
+wordgloss(kalama, "sound, noise, voice, make noise, to sound, to ring, to play (an instrument)").
+wordgloss(kama, "to come, to become, to arrive, to bring about, to summon, event, future").
+wordgloss(kasi, "plant, leaf, herb, tree, wood").
+wordgloss(kepeken, "to use, using, with").
+wordgloss(kili, "fruit, pulpy vegetable, a mushroom").
+wordgloss(kin, "also, too, even, indeed (emphasizes the words before it)").
+wordgloss(kipisi, "to cut").
+wordgloss(kiwen, "hard, solid, stone-like, hard thing, rock, stone, metal, mineral, clay").
+wordgloss(ko, "semi-solid or squishy substance").
+wordgloss(kon, "air, wind, smell, soul, air-like, ethereal, gaseous").
+wordgloss(kule, "color, paint, colorful, to color, to paint").
+wordgloss(kulupu, "group, community, society, company, communal, shared, public, of the society").
+wordgloss(kute, "to listen, to hear, auditory, hearing").
+wordgloss(la, "separates adverb or phrase of context and sentence").
+wordgloss(lape, "to sleep, to rest, sleeping").
+wordgloss(laso, "blue, blue-green").
+wordgloss(lawa, "head, mind, brain, main, leading, in charge, to lead, to control, to rule, to steer").
+wordgloss(len, "clothes, cloth, fabric").
+wordgloss(lete, "cold, uncooked, to cool down, to chill").
+wordgloss(li, "separator, between any subject (except mi and sina) and its verb").
+wordgloss(lili, "small, little, young, a bit, short, few, less, to reduce, to shorten, to shrink, to lessen").
+wordgloss(linja, "string, rope, hair, thread, cord, chain").
+wordgloss(lipu, "a flat bendable thing, paper, card, ticket").
+wordgloss(loje, "red").
+wordgloss(lon, "be (located) in, at, on, to exist, to be there, to be awake, to be present, to be real").
+wordgloss(luka, "hand, arm").
+wordgloss(lukin, "to see, to look at, to watch, to read, to pay attention, visual").
+wordgloss(lupa, "hole, orifice, window, door").
+wordgloss(ma, "earth, land, country, (outdoor) area").
+wordgloss(mama, "parent, mother, father, parental").
+wordgloss(mani, "money, material wealth, currency, capital").
+wordgloss(meli, "woman, female, girl, wife, girlfriend, female, feminine, womanly").
+wordgloss(mi, "I, me, we, my, our").
+wordgloss(mije, "man, male, boy, husband, boyfriend, male, masculine, manly").
+wordgloss(moku, "food, meal, to eat, to drink, to swallow, to ingest, to consume").
+wordgloss(moli, "death, to die, to be dead, to kill, dead, deathly, fatal").
+wordgloss(monsi, "back, rear end, behind, butt").
+wordgloss(monsuta, "danger, predator, menace").
+wordgloss(mu, "cute animal noise, woof!, meow!, moo!").
+wordgloss(mun, "moon, lunar").
+wordgloss(musi, "fun, playing, game, recreation, art, entertainment, to play, to amuse, to have fun").
+wordgloss(mute, "many, very, much, several, a lot, amount, quantity, to make many or much").
+wordgloss(namako, "extra, additional, spice").
+wordgloss(nanpa, "number").
+wordgloss(nasa, "crazy, silly, foolish, drunk, strange, stupid, weird, to drive crazy, to make weird").
+wordgloss(nasin, "way, manner, custom, road, path, doctrine, method").
+wordgloss(nena, "bump, extrusion, nose, hill, mountain, button").
+wordgloss(ni, "that, this").
+wordgloss(nimi, "word, a name").
+wordgloss(noka, "leg, foot").
+wordgloss(o, "calls someone's attention, hey!").
+wordgloss(oko, "eye").
+wordgloss(olin, "love, to love (a person)").
+wordgloss(ona, "she, he, it, they, her, his, its, their").
+wordgloss(open, "to open, to turn on").
+wordgloss(pakala, "blunder, accident, destruction, to screw up, to damage, to break, damn!").
+wordgloss(pali, "work, activity, deed, project, active, work-related, operating, to work, to act").
+wordgloss(palisa, "rod, stick, branch").
+wordgloss(pan, "grain, cereal").
+wordgloss(pana, "to give, to put, to send, to place, to release, to cause, giving, transfer, exchange").
+wordgloss(pi, "of, belonging to, used to separate a noun from another noun that has an adjective").
+wordgloss(pilin, "feelings, emotion, heart, to feel, to think, to sense, to touch").
+wordgloss(pimeja, "black, dark, darkness, shadows, to darken").
+wordgloss(pini, "end, tip, completed, finished, past, done, ago, to finish, to close, to end, to tur").
+wordgloss(pipi, "bug, spider, insect").
+wordgloss(poka, "side, hip, next to, in the accompaniment of, with, neighboring").
+wordgloss(poki, "box, container, cup, bowl, glass").
+wordgloss(pona, "good, simplicity, simple, great!, to improve, to fix, to make good, beneficial").
+wordgloss(sama, "same, similar, equal, like, as, seem").
+wordgloss(seli, "fire, warmth, heat, hot, warm, cooked, to heat, to warm up, to cook").
+wordgloss(selo, "outside, surface, skin, shell, bark, shape, peel").
+wordgloss(seme, "what, which, wh- question").
+wordgloss(sewi, "up, high, above, top, on, over, superior, elevated").
+wordgloss(sijelo, "body, physical state").
+wordgloss(sike, "circle, ball, wheel, sphere, cycle, round, cyclical").
+wordgloss(sin, "new, fresh, another, more, to renew, to renovate, to freshen").
+wordgloss(sina, "your, you").
+wordgloss(sinpin, "front, chest, torso, face, wall").
+wordgloss(sitelen, "picture, image, to draw, to write").
+wordgloss(sona, "knowledge, wisdom, intelligence, understanding, to know, to understand").
+wordgloss(soweli, "animal, land mammal, lovable animal").
+wordgloss(suli, "big, tall, long, adult, important, to enlarge, to lengthen, size").
+wordgloss(suno, "sun, light, shiny").
+wordgloss(supa, "horizontal surface, supporting platform").
+wordgloss(suwi, "candy, sweet food, cute, to sweeten").
+wordgloss(tan, "from, by, because of, since, origin, cause").
+wordgloss(taso, "only, sole, but").
+wordgloss(tawa, "to, towards, in order to, for, until, to go to, to walk, to travel, to move, movement").
+wordgloss(telo, "water, liquid, sauce, beverage, body fluid, body of water, to water, to wash").
+wordgloss(tenpo, "time, period of time, moment, duration, situation, occasion").
+wordgloss(toki, "language, speech, communication, verbal, to say, to talk, to communicate, hello!").
+wordgloss(tomo, "house, room, home, building, indoor constructed space, urban, domestic").
+wordgloss(tu, "two, duo, pair, to double, to separate, to cut, to divide in two").
+wordgloss(unpa, "sex, sexuality, erotic, to have sex").
+wordgloss(uta, "mouth, oral").
+wordgloss(utala, "war, conflict, disharmony, fight, competition, attack, argument, to strike, to attack").
+wordgloss(walo, "white, light colored, whiteness, lightness").
+wordgloss(wan, "one, a, unit, element, particle, part, piece, to unite, to make one").
+wordgloss(waso, "bird, winged animal").
+wordgloss(wawa, "energy, strength, power, energetic, strong, fierce, to strengthen, to empower").
+wordgloss(weka, "away, absent, missing, absence, to throw away, to remove, to get rid of").
+wordgloss(wile, "to want, to need, to have to, must, will, should, desire, necessary").
