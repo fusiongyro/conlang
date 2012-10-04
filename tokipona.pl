@@ -40,9 +40,11 @@ wordgloss(Word) --> syllable(W), wordgloss(W1), { atom_concat(W, W1, Word) }.
 %% grammar
 %% taken from http://en.wikipedia.org/wiki/Toki_Pona#Syntax
 
-sentence(vocative(Target, Predicate)) --> optional_subclause, vocative(Target), predicate(Predicate).
-sentence(interjection(I)) --> interjection(I).
-sentence(subject) --> optional_subclause, optional_vocative, subject, predicate(_).
+tokipona(X, Y) :- phrase(sentence(Y), X).
+
+sentence(vocative(SC, Target, Predicate)) --> optional_subclause(SC), vocative(Target), predicate(Predicate).
+sentence(interjection(I))                 --> interjection(I).
+sentence(predicate(SC, V, S, P))          --> optional_subclause(SC), optional_vocative(V), subject(S), predicate(P).
 
 interjection(a). 
 interjection(ala). 
@@ -56,186 +58,134 @@ interjection(toki).
 
 interjection(I) --> [I], { interjection(I) }.
 
-optional_subclause --> [].
-optional_subclause --> subclause.
+optional_subclause([]) --> [].
+optional_subclause(SC) --> subclause(SC).
 
-subclause --> [taso], sentence(_), [la].
-subclause --> [taso], noun_phrase(_), [la].
+subclause(sentence(S))      --> [taso], sentence(S), [la].
+subclause(noun_phrase(NP))  --> [taso], noun_phrase(NP), [la].
 
-optional_vocative --> [].
-optional_vocative --> vocative(_).
+optional_vocative([])  --> [].
+optional_vocative([V]) --> vocative(V).
 
 vocative(Target) --> noun_phrase(Target), [o].
 
-subject --> [mi].
-subject --> [sina].
-subject --> noun_phrase(_), [li].
+subject(mi)               --> [mi].
+subject(sina)             --> [sina].
+subject(noun_phrase(NP))  --> noun_phrase(NP), [li].
 
-predicate(noun) --> noun_phrase(_), multiple_optional_prepositional_phrases(_).
-predicate(verb) --> verb_phrase, optional_prepositional_phrase(_).
-predicate(conjunction) --> predicate(_), conjunction(_), predicate(_).
+predicate(conjunction(Conj, Left, Right)) --> simple_predicate(Left), conjunction(Conj), predicate(Right).
+predicate(Predicate)                      --> simple_predicate(Predicate).
 
-noun_phrase(pi(SimpleNoun, NounPhrase)) --> simple_noun_phrase(SimpleNoun), [pi], noun_phrase(NounPhrase).
-noun_phrase(conj(C, LeftNounPhrase, RightNounPhrase)) --> simple_noun_phrase(LeftNounPhrase), conjunction(C), noun_phrase(RightNounPhrase).
-noun_phrase(SimpleNoun) --> simple_noun_phrase(SimpleNoun).
+simple_predicate(noun_predicate(Noun, PPs)) --> noun_phrase(Noun), multiple_optional_prepositional_phrases(PPs).
+simple_predicate(verb_predicate(Verb, PP))  --> verb_phrase(Verb), optional_prepositional_phrase(PP).
+
+noun_phrase(pi(SimpleNoun, NounPhrase))   --> simple_noun_phrase(SimpleNoun), [pi], noun_phrase(NounPhrase).
+noun_phrase(conj(C, LeftP, RightP))       --> simple_noun_phrase(LeftP), conjunction(C), noun_phrase(RightP).
+noun_phrase(SimpleNoun)                   --> simple_noun_phrase(SimpleNoun).
 
 simple_noun_phrase(noun(Noun, Modifiers)) --> noun(Noun), multiple_optional_modifiers(Modifiers).
 
-multiple_optional_modifiers([]) --> [].
+multiple_optional_modifiers([])     --> [].
 multiple_optional_modifiers([M|Ms]) --> modifier(M), multiple_optional_modifiers(Ms).
 
-multiple_optional_prepositional_phrases([]) --> [].
+multiple_optional_prepositional_phrases([])       --> [].
 multiple_optional_prepositional_phrases([PP|PPs]) --> prepositional_phrase(PP), multiple_optional_prepositional_phrases(PPs).
 
-optional_prepositional_phrase([]) --> [].
+optional_prepositional_phrase([])   --> [].
 optional_prepositional_phrase([PP]) --> prepositional_phrase(PP).
 
 prepositional_phrase(pp(P, NP)) --> preposition(P), noun_phrase(NP).
 
-verb_phrase --> verbal.
-verb_phrase --> modal, verbal.
-verb_phrase --> verbal, [ala], verbal.
-verb_phrase --> modal, [ala], modal, verbal.
+verb_phrase(V)                            --> verbal(V).
+verb_phrase(modal(M, V))                  --> modal(M), verbal(V).
+verb_phrase(ala(Left, Right))             --> verbal(Left), [ala], verbal(Right).
+verb_phrase(modal(ala(LeftM, RightM), V)) --> modal(LeftM), [ala], modal(RightM), verbal(V).
 
-modal --> [kama].
-modal --> [ken].
-modal --> [wile].
+modal(kama) --> [kama].
+modal(ken)  --> [ken].
+modal(wile) --> [wile].
 
-verbal --> verb, multiple_optional_modifiers(_).
-verbal --> verb, multiple_optional_modifiers(_), direct_object.
-verbal --> [lon], simple_noun_phrase(_).
-verbal --> [tawa], simple_noun_phrase(_).
+verbal(intransitive(V, Mod))    --> verb(V), multiple_optional_modifiers(Mod).
+verbal(transitive(V, Mod, DO))  --> verb(V), multiple_optional_modifiers(Mod), direct_object(DO).
+verbal(lon(Noun))               --> [lon], simple_noun_phrase(Noun).
+verbal(tawa(Noun))              --> [tawa], simple_noun_phrase(Noun).
 
-direct_object --> [e], simple_noun_phrase(_).
+direct_object(Noun) --> [e], simple_noun_phrase(Noun).
 
 % these are imprecise and should be addressed
-verb --> [X], { wordgloss(X, _) }.
-noun(X) --> [X], { wordgloss(X, _) }.
+verb(X) --> [X], { wordgloss(X, _) }.
+noun(X) --> [X], { noun(X) }.
 modifier(X) --> [X], { modifier(X) }.
 preposition(P) --> [P], { preposition(P) }.
 
 conjunction(X) --> [X], { conjunction(X) }.
 
 %% conjunctions
-conjunction(anu).
-conjunction(en).
+conjunction(anu).   conjunction(en).
 
 %% modifiers
-modifier(ala).
-modifier(anpa).
-modifier(akesi).
-modifier(ale).
-modifier(ante).
-modifier(awen).
-modifier(ijo).
-modifier(ike).
-modifier(insa).
-modifier(jaki).
-modifier(jan).
-modifier(jelo).
-modifier(jo).
-modifier(kala).
-modifier(kalama).
-modifier(kama).
-modifier(kasi).
-modifier(kili).
-modifier(kin).
-modifier(kiwen).
-modifier(ko).
-modifier(kon).
-modifier(kule).
-modifier(kulupu).
-modifier(kute).
-modifier(lape).
-modifier(laso).
-modifier(lawa).
-modifier(len).
-modifier(lete).
-modifier(lili).
-modifier(linja).
-modifier(lipu).
-modifier(loje).
-modifier(lon).
-modifier(luka).
-modifier(lukin).
-modifier(lupa).
-modifier(ma).
-modifier(mama).
-modifier(mani).
-modifier(meli).
-modifier(mi).
-modifier(mije).
-modifier(moku).
-modifier(moli).
-modifier(monsuta).
-modifier(mun).
-modifier(musi).
-modifier(mute).
-modifier(namako).
-modifier(nasa).
-modifier(nasin).
-modifier(nena).
-modifier(nimi).
-modifier(noka).
-modifier(oko).
-modifier(olin).
-modifier(open).
-modifier(pakala).
-modifier(pali).
-modifier(palisa).
-modifier(pan).
-modifier(pana).
-modifier(pilin).
-modifier(pimeja).
-modifier(pini).
-modifier(pipi).
-modifier(poka).
-modifier(poki).
-modifier(pona).
-modifier(sama).
-modifier(seli).
-modifier(selo).
-modifier(sewi).
-modifier(sijelo).
-modifier(sike).
-modifier(sin).
-modifier(sinpin).
-modifier(sitelen).
-modifier(sona).
-modifier(soweli).
-modifier(suli).
-modifier(suno).
-modifier(supa).
-modifier(suwi).
-modifier(tan).
-modifier(taso).
-modifier(tawa).
-modifier(telo).
-modifier(tenpo).
-modifier(toki).
-modifier(tomo).
-modifier(tu).
-modifier(unpa).
-modifier(uta).
-modifier(utala).
-modifier(walo).
-modifier(wan).
-modifier(waso).
-modifier(wawa).
-modifier(weka).
-modifier(wile).
+modifier(ala).      modifier(anpa).     modifier(akesi).    modifier(ale).
+modifier(ante).     modifier(awen).     modifier(ijo).      modifier(ike).
+modifier(insa).     modifier(jaki).     modifier(jan).      modifier(jelo).
+modifier(jo).       modifier(kala).     modifier(kalama).   modifier(kama).
+modifier(kasi).     modifier(kili).     modifier(kin).      modifier(kiwen).
+modifier(ko).       modifier(kon).      modifier(kule).     modifier(kulupu).
+modifier(kute).     modifier(lape).     modifier(laso).     modifier(lawa).
+modifier(len).      modifier(lete).     modifier(lili).     modifier(linja).
+modifier(lipu).     modifier(loje).     modifier(lon).      modifier(luka).
+modifier(lukin).    modifier(lupa).     modifier(ma).       modifier(mama).
+modifier(mani).     modifier(meli).     modifier(mi).       modifier(mije).
+modifier(moku).     modifier(moli).     modifier(monsuta).  modifier(mun).
+modifier(musi).     modifier(mute).     modifier(namako).   modifier(nasa).
+modifier(nasin).    modifier(nena).     modifier(nimi).     modifier(noka).
+modifier(oko).      modifier(olin).     modifier(open).     modifier(pakala).
+modifier(pali).     modifier(palisa).   modifier(pan).      modifier(pana).
+modifier(pilin).    modifier(pimeja).   modifier(pini).     modifier(pipi).
+modifier(poka).     modifier(poki).     modifier(pona).     modifier(sama).
+modifier(seli).     modifier(selo).     modifier(sewi).     modifier(sijelo).
+modifier(sike).     modifier(sin).      modifier(sinpin).   modifier(sitelen).
+modifier(sona).     modifier(soweli).   modifier(suli).     modifier(suno).
+modifier(supa).     modifier(suwi).     modifier(tan).      modifier(taso).
+modifier(tawa).     modifier(telo).     modifier(tenpo).    modifier(toki).
+modifier(tomo).     modifier(tu).       modifier(unpa).     modifier(uta).
+modifier(utala).    modifier(walo).     modifier(wan).      modifier(waso).
+modifier(wawa).     modifier(weka).     modifier(wile).     modifier(ali).
 
 %% prepositions
-preposition(anpa).
-preposition(insa).
-preposition(jo).
-preposition(lon).
-preposition(poka).
-preposition(selo).
-preposition(sewi).
-preposition(sinpin).
-preposition(tan).
-preposition(tawa).
+preposition(anpa).  preposition(insa).  preposition(jo).    preposition(lon).
+preposition(poka).  preposition(selo).  preposition(sewi).  preposition(sinpin).
+preposition(tan).   preposition(tawa).
+
+%% nouns
+noun(ala).          noun(anpa).         noun(ken).          noun(akesi).    
+noun(alasa).        noun(ale).          noun(ali).          noun(ante).
+noun(awen).         noun(esun).         noun(ijo).          noun(ike).
+noun(ilo).          noun(insa).         noun(jaki).         noun(jan).
+noun(jelo).         noun(jo).           noun(kala).         noun(kalama).
+noun(kama).         noun(kasi).         noun(kepeken).      noun(kili).
+noun(kipisi).       noun(kiwen).        noun(ko).           noun(kon).
+noun(kule).         noun(kulupu).       noun(kute).         noun(lape).
+noun(laso).         noun(lawa).         noun(len).          noun(lete).
+noun(lili).         noun(linja).        noun(lipu).         noun(loje).
+noun(luka).         noun(lukin).        noun(lupa).         noun(ma).
+noun(mama).         noun(mani).         noun(meli).         noun(mije).
+noun(moku).         noun(moli).         noun(monsi).        noun(monsuta).
+noun(mu).           noun(mun).          noun(musi).         noun(mute).
+noun(namako).       noun(nanpa).        noun(nasa).         noun(nasin).
+noun(nena).         noun(ni).           noun(nimi).         noun(noka).
+noun(oko).          noun(olin).         noun(ona).          noun(open).
+noun(pakala).       noun(pali).         noun(palisa).       noun(pan).
+noun(pana).         noun(pilin).        noun(pimeja).       noun(pini).
+noun(pipi).         noun(poka).         noun(poki).         noun(pona).
+noun(sama).         noun(seli).         noun(selo).         noun(seme).
+noun(sewi).         noun(sijelo).       noun(sike).         noun(sin).
+noun(sinpin).       noun(sitelen).      noun(sona).         noun(soweli).
+noun(suli).         noun(suno).         noun(supa).         noun(suwi).
+noun(tan).          noun(taso).         noun(tawa).         noun(telo).
+noun(tenpo).        noun(toki).         noun(tomo).         noun(tu).
+noun(unpa).         noun(uta).          noun(utala).        noun(walo).
+noun(wan).          noun(waso).         noun(wawa).         noun(weka).
+noun(wile).
 
 %% wordgloss(word, gloss)
 wordgloss(a, "ah!, ha!, uh!, oh!, ooh!, aw!, well!").
