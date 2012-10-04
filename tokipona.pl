@@ -96,21 +96,24 @@ optional_prepositional_phrase([PP]) --> prepositional_phrase(PP).
 
 prepositional_phrase(pp(P, NP)) --> preposition(P), noun_phrase(NP).
 
-verb_phrase(V)                            --> verbal(V).
-verb_phrase(modal(M, V))                  --> modal(M), verbal(V).
 verb_phrase(ala(Left, Right))             --> verbal(Left), [ala], verbal(Right).
 verb_phrase(modal(ala(LeftM, RightM), V)) --> modal(LeftM), [ala], modal(RightM), verbal(V).
+verb_phrase(modal(M, V))                  --> modal(M), verbal(V).
+verb_phrase(V)                            --> verbal(V).
 
 modal(kama) --> [kama].
 modal(ken)  --> [ken].
 modal(wile) --> [wile].
 
 verbal(intransitive(V, Mod))    --> verb(V), multiple_optional_modifiers(Mod).
-verbal(transitive(V, Mod, DO))  --> verb(V), multiple_optional_modifiers(Mod), direct_object(DO).
+verbal(transitive(V, Mod, DO))  --> verb(V), multiple_optional_modifiers(Mod), direct_objects(DO).
 verbal(lon(Noun))               --> [lon], simple_noun_phrase(Noun).
 verbal(tawa(Noun))              --> [tawa], simple_noun_phrase(Noun).
 
-direct_object(Noun) --> [e], simple_noun_phrase(Noun).
+direct_objects(conj(e, DO, DOs)) --> direct_object(DO), direct_objects(DOs).
+direct_objects(DO) --> direct_object(DO).
+
+direct_object(Noun) --> [e], noun_phrase(Noun).
 
 % these are imprecise and should be addressed
 verb(X) --> [X], { wordgloss(X, _) }.
@@ -150,6 +153,7 @@ modifier(tawa).     modifier(telo).     modifier(tenpo).    modifier(toki).
 modifier(tomo).     modifier(tu).       modifier(unpa).     modifier(uta).
 modifier(utala).    modifier(walo).     modifier(wan).      modifier(waso).
 modifier(wawa).     modifier(weka).     modifier(wile).     modifier(ali).
+modifier(ni).
 
 %% prepositions
 preposition(anpa).  preposition(insa).  preposition(jo).    preposition(lon).
@@ -185,7 +189,7 @@ noun(tan).          noun(taso).         noun(tawa).         noun(telo).
 noun(tenpo).        noun(toki).         noun(tomo).         noun(tu).
 noun(unpa).         noun(uta).          noun(utala).        noun(walo).
 noun(wan).          noun(waso).         noun(wawa).         noun(weka).
-noun(wile).
+noun(wile). 
 
 %% wordgloss(word, gloss)
 wordgloss(a, "ah!, ha!, uh!, oh!, ooh!, aw!, well!").
