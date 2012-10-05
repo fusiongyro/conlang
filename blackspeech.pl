@@ -34,8 +34,8 @@ optional([_|Os], Rs)     --> optional(Os, Rs).
 % ûk  pl
 
 utterance([Conj|Rest]) --> conjunction(Conj), utterance(Rest).
-utterance([VP|Rest]) --> verb_phrase(VP), utterance(Rest).
-utterance([]) --> [].
+utterance([VP|Rest])   --> verb_phrase(VP), utterance(Rest).
+utterance([])          --> [].
 
 conjunction(conj(Conj, Left, Right)) --> verb_phrase(Left), [Conj], { conjunction(Conj, _) }, verb_phrase(Right).
 
@@ -111,6 +111,9 @@ english(vp(pp(Prep, PP), VP), English) :-
 
 english(verb(Root, [infinitive|Mods]), [to|Rest]) :- 
   english(verb(Root, Mods), Rest).
+english(verb(Root, [person(3), number(pl)|Mods]), Result) :-
+  english(verb(Root, Mods), Rest),
+  append(Rest, [them,all], Result).
 english(verb(Root, [person(3)|Mods]), Result) :- 
   english(verb(Root, Mods), Rest),
   append(Rest, [them], Result).
@@ -143,6 +146,6 @@ main :-
   write('The ring speech: '),
   display(RingSpeech), nl,
   write('Parsed: '), nl,
-  write(Tree), nl,
+  portray_clause(Tree), nl,
   write('Translated: '), nl,
   display(English), nl, !.
