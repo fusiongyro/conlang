@@ -25,6 +25,9 @@ consonant1(C) --> [C], { consonant(C, _, _) }.
 vowel(V) --> [V], { vowel(V) }.
 nasal(N) --> [N], { consonant1(N, nasal, _) }.
 
+possible_word(W) --> syllable(W).
+possible_word(W) --> syllable(Start), possible_word(Rest), { atom_concat(Start, Rest, W) }.
+
 syllable(S) --> syllable1(Chars), { atom_chars(S, Chars) }.
 
 syllable1([C|S]) --> consonant1(C), syllable_body(S).
