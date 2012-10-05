@@ -4,7 +4,7 @@ This is a collection of Prolog programs I wrote playing with
 constructed languages. Some of them are incomplete, others are just
 started, a some are "done" and work as advertised.
 
-## blackspeech.pl
+## [blackspeech.pl]()
 
 This refers to Tolkien's "Black Speech", the best example is the One Ring inscription:
 
@@ -77,7 +77,7 @@ English translation unit: `noun(nominalized(root(burz)))` is converted
 directly to `darkness` rather than going through the root-lookup
 facility.
 
-## tokipona.pl
+## [tokipona.pl]()
 
 This module has two parts. The first deals just with its phonology:
 
@@ -107,14 +107,14 @@ some "dark teenage poetry" and see what you get:
     % tokipona compiled 0.01 sec, 471 clauses
     true.
 
-"Something is eating me"
+"Something is eating me":
     
     tokipona:  ?- tokipona([ijo, li, moku, e, mi], X).
     false.
 
 Oops.
 
-"I want to hurt"
+"I want to hurt":
     
     tokipona:  ?- tokipona([mi, wile, pakala], X).
     X = predicate([], [], mi, noun_predicate(noun(wile, [pakala]), [])) ;
@@ -128,7 +128,7 @@ hurt(v. inf.)"? Is it saying "I hurt-want"? The correct answer is #2,
 but the grammar is so loose there's no a priori way to determine which
 translation is correct--the human must supply that information.
 
-The problem gets worse with longer sentences: "Darkness goes inside of me"
+The problem gets worse with longer sentences: "Darkness goes inside of me":
 
     tokipona:  ?- tokipona([pimeja, li, tawa, insa, kon, mi], X).
     X = predicate([], [], noun_phrase(noun(pimeja, [])), noun_predicate(noun(tawa, []), [pp(insa, noun(kon, [mi]))])) ;
@@ -145,7 +145,7 @@ inside". In practice several of these are close enough that a fairly
 direct English translation would be fine, but a few weirdly miss the
 mark, mostly involving the zero copula.
 
-Let's try "Nobody can know my pain.":
+Let's try "Nobody can know my pain":
 
     tokipona:  ?- tokipona([jan, ala, li, ken, sona, e, pilin, ike, mi], X).
     X = predicate([], [], noun_phrase(noun(jan, [ala])), verb_predicate(modal(ken, transitive(sona, [], noun(pilin, [ike, mi]))), [])) ;
@@ -162,18 +162,18 @@ only friend":
     X = predicate([], [noun(toki, [musi])], sina, verb_predicate(intransitive(jan, [pona, mi, wan, taso]), [])) ;
     false.
 
-*"O Poetry! Only-one-my-friend you" looks pretty bad. The other two
- are better: "O Poetry, you are only-one-my-friend" and *"O Poetry,
- you only-one-friendly person(v)". I think all three of these actually
- capture the meaning pretty well, but only the second one will yield a
- meaningful English translation.
+"O Poetry! Only-one-my-friend you" looks pretty bad. The other two are
+better: "O Poetry, you are only-one-my-friend" and "O Poetry, you
+only-one-friendly person(v)". I think all three of these actually
+capture the meaning pretty well, but only the second one will yield a
+meaningful English translation.
 
 The rest of the poem doesn't parse quite yet.
 
-## phono.pl
+## [phono.pl]()
 
 This is an attempt to handle phonology in a rather general fashion. Very incompelete.
 
-## syllab.pl
+## [syllab.pl]()
 
 This is an attempt to handle syllables and phonotactics in a general fashion. Also very incomplete.
