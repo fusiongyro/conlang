@@ -1,22 +1,18 @@
 :- module(morph).
 
-verb(Verb, Mods) --> root(Verb), modifiers(Mods).
-
-modifiers([]) --> [].
-modifiers([infinitive|Rest]) --> "at", modifiers(Rest).
-modifiers([third_person|Rest]) --> "ul", modifiers(Rest).
-modifiers([plural|Rest]) --> "um", modifiers(Rest).
+optional([], [])         --> [].
+optional([O|Os], [O|Rs]) --> O, optional(Os, Rs).
+optional([_|Os], Rs)     --> optional(Os, Rs).
 
 root(burz) --> "burz".
 root(durb) --> "durb".
 root(gimb) --> "gimb".
 
-infinitive --> "at".
+infinitive   --> "at".
 third_person --> "ul".
-plural --> "um".
+plural       --> "um".
 
-optional([], []) --> [].
-optional([This|Results], [This|Rest]) --> This, !, optional(Results, [Rest]).
-optional(Results, [_|Rest]) --> optional(Results, Rest).
+verb(Verb, Mods) --> 
+    root(Verb), 
+    optional([infinitive, third_person, plural], Mods).
 
-verb2(Verb, Mods) --> root(Verb), optional([infinitive, third_person, plural], Mods), !.
