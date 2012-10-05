@@ -33,6 +33,12 @@ optional([_|Os], Rs)     --> optional(Os, Rs).
 % ul  3p
 % ûk  pl
 
+utterance([Conj|Rest]) --> conjunction(Conj), utterance(Rest).
+utterance([VP|Rest]) --> verb_phrase(VP), utterance(Rest).
+utterance([]) --> [].
+
+conjunction(conj(Conj, Left, Right)) --> verb_phrase(Left), [Conj], { conjunction(Conj, _) }, verb_phrase(Right).
+
 infinitive --> "at".
 person(3)  --> "ul".
 number(pl) --> "ûk".
@@ -62,6 +68,7 @@ prepositional_phrase(pp(Prep, NP)) -->
     phrase(prep(Prep), ModifierCodes)
   }.
 
+verb_phrase(vp(NP, VP)) --> noun_phrase(NP), verb_phrase(VP).
 verb_phrase(vp(PP, VP)) --> prepositional_phrase(PP), verb_phrase(VP).
 % this one is fairly nasty
 verb_phrase(vp(verb(Root, Modifiers))) -->
@@ -78,15 +85,28 @@ descriptor(descriptor(NP, VP)) --> noun_phrase(NP), verb_phrase(VP).
 root(Noun) --> [Noun], { root(Noun, _) }.
 
 %% English translation
+english([X|Xs], Result) :- english(X, Next), english(Xs, Rest), append(Next, Rest, Result).
+english([], []).
+
+english(conj(agh, Left, Right), English) :-
+  english(Left, LeftEnglish),
+  english(Right, RightEnglish),
+  append(LeftEnglish, [and], HalfEnglish),
+  append(HalfEnglish, RightEnglish, English).
+  
 english(descriptor(NP, VP), English) :-
   english(NP, EnglishNP),
   english(VP, EnglishVP),
   append(EnglishNP, EnglishVP, English).
 
 english(vp(VP), English) :- english(VP, English).
-english(vp(PP, VP), English) :- 
+english(vp(np(NP), VP), English) :- 
   english(VP, VerbEnglish),
-  english(PP, PrepEnglish), 
+  english(np(NP), NounEnglish), 
+  append(NounEnglish, VerbEnglish, English).
+english(vp(pp(Prep, PP), VP), English) :- 
+  english(VP, VerbEnglish),
+  english(pp(Prep, PP), PrepEnglish), 
   append(VerbEnglish, PrepEnglish, English).
 
 english(verb(Root, [infinitive|Mods]), [to|Rest]) :- 
@@ -106,9 +126,23 @@ english(np(modifier(Mod), NP), Result) :-
 english(np(BS), English) :- english(BS, English).
 english(root(X), [English]) :- root(X, English).
 
-english(noun(root(X)), Y) :- root(X, Y).
+english(noun(root(X)), [Y]) :- root(X, Y).
 english(pp(ishi, NP), [in|Rest]) :- english(NP, Rest).
 
 % special cases
 english(noun(nominalized(root(burz))), [darkness]).
 
+display([Word|Rest]) :- write(Word), write(' '), display(Rest).
+display([]) :- !.
+
+
+main :-
+  speech(RingSpeech),
+  phrase(utterance(Tree), RingSpeech), 
+  english(Tree, English),
+  write('The ring speech: '),
+  display(RingSpeech), nl,
+  write('Parsed: '), nl,
+  write(Tree), nl,
+  write('Translated: '), nl,
+  display(English), nl, !.
