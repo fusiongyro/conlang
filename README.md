@@ -4,7 +4,7 @@ This is a collection of Prolog programs I wrote playing with
 constructed languages. Some of them are incomplete, others are just
 started, a some are "done" and work as advertised.
 
-## [blackspeech.pl]()
+## [blackspeech.pl](blackspeech.pl)
 
 This refers to Tolkien's "Black Speech", the best example is the One Ring inscription:
 
@@ -77,7 +77,7 @@ English translation unit: `noun(nominalized(root(burz)))` is converted
 directly to `darkness` rather than going through the root-lookup
 facility.
 
-## [tokipona.pl]()
+## [tokipona.pl](tokipona.pl)
 
 This module has two parts. The first deals just with its phonology:
 
@@ -170,10 +170,10 @@ meaningful English translation.
 
 The rest of the poem doesn't parse quite yet.
 
-## [phono.pl]()
+## [phono.pl](phono.pl)
 
 This is an attempt to handle phonology in a rather general fashion. Very incompelete.
 
-## [syllab.pl]()
+## [syllab.pl](syllab.pl)
 
 This is an attempt to handle syllables and phonotactics in a general fashion. Also very incomplete.
