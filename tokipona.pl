@@ -43,11 +43,44 @@ wordgloss(Word) --> syllable(W), wordgloss(W1), { atom_concat(W, W1, Word) }.
 %% grammar
 %% taken from http://en.wikipedia.org/wiki/Toki_Pona#Syntax
 
-tokipona(X, Y) :- phrase(sentence(Y), X).
+%% sample texts:
+dark_teenage_poetry([
+  [ijo, li, moku, e, mi],                               % Something is eating me.
+  [mi, wile, pakala],                                   % I want to hurt.
+  [pimeja, li, tawa, insa, kon, mi],                    % Darkness goes inside of me.
+  [jan, ala, li, ken, sona, e, pilin, ike, mi],         % Nobody can know my pain.
+  [toki, musi, o, sina, jan, pona, mi, wan, taso],      % Poetry, you are my one and only friend.
+  [telo, pimeja, ni, li, telo, loje, mi, li, ale, mi],  % This ink is my blood, is my all.
+  [tenpo, ale, la, pimeja, li, lon]                     % Darkness always exists.
+]).
 
-sentence(vocative(SC, Target, Predicate)) --> optional_subclause(SC), vocative(Target), predicate(Predicate).
-sentence(interjection(I))                 --> interjection(I).
-sentence(predicate(SC, V, S, P))          --> optional_subclause(SC), optional_vocative(V), subject(S), predicate(P).
+show_parse(X) :-
+  write('Parsing: '), write(X), nl, 
+  once(tokipona(X, Parsed)), !,
+  write('Parsed: '),
+  portray_clause(Parsed), nl.
+show_parse(_) :-
+  write('Unable to parse!'), nl.
+
+tokipona(X, Y) :- phrase(sentence1(Y), X).
+
+read_tokipona(Tree) :- 
+  read_line_to_codes(user_input, Input),
+  string_to_atom(Input,IA),
+  atomic_list_concat(AlistI,' ',IA),
+  tokipona(AlistI, Tree).
+
+sentence1(interjection(I)) --> interjection(I).
+sentence1(subclause(SC, S)) --> subclause(SC), simple_sentence(S).
+sentence1(S) --> simple_sentence(S).
+
+simple_sentence(vocative(Target, Predicate))      --> vocative(Target), predicate(Predicate).
+simple_sentence(vocative_predicate(V, Subject, Predicate)) --> vocative(V), subject(Subject), predicate(Predicate).
+simple_sentence(predicate(Subject, Predicate))    --> subject(Subject), predicate(Predicate).
+
+%sentence(vocative(SC, Target, Predicate)) --> optional_subclause(SC), vocative(Target), predicate(Predicate).
+%sentence(interjection(I))                 --> interjection(I).
+%sentence(predicate(SC, V, S, P))          --> optional_subclause(SC), optional_vocative(V), subject(S), predicate(P).
 
 interjection(a). 
 interjection(ala). 
@@ -64,8 +97,11 @@ interjection(I) --> [I], { interjection(I) }.
 optional_subclause([]) --> [].
 optional_subclause(SC) --> subclause(SC).
 
-subclause(sentence(S))      --> [taso], sentence(S), [la].
-subclause(noun_phrase(NP))  --> [taso], noun_phrase(NP), [la].
+subclause(sentence(S))      --> optional_taso, simple_sentence(S), [la].
+subclause(noun_phrase(NP))  --> optional_taso, noun_phrase(NP), [la].
+
+optional_taso --> [taso].
+optional_taso --> [].
 
 optional_vocative([])  --> [].
 optional_vocative([V]) --> vocative(V).
@@ -192,7 +228,7 @@ noun(tan).          noun(taso).         noun(tawa).         noun(telo).
 noun(tenpo).        noun(toki).         noun(tomo).         noun(tu).
 noun(unpa).         noun(uta).          noun(utala).        noun(walo).
 noun(wan).          noun(waso).         noun(wawa).         noun(weka).
-noun(wile). 
+noun(wile).         noun(mi).           noun(sina).
 
 %% wordgloss(word, gloss)
 wordgloss(a, "ah!, ha!, uh!, oh!, ooh!, aw!, well!").
