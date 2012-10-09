@@ -54,6 +54,11 @@ dark_teenage_poetry([
   [tenpo, ale, la, pimeja, li, lon]                     % Darkness always exists.
 ]).
 
+main :-
+  dark_teenage_poetry(Lines),
+  member(Line, Lines),
+  show_parse(Line).
+
 show_parse(X) :-
   write('Parsing: '), write(X), nl, 
   once(tokipona(X, Parsed)), !,
@@ -166,69 +171,71 @@ conjunction(X) --> [X], { conjunction(X) }.
 conjunction(anu).   conjunction(en).
 
 %% modifiers
-modifier(ala).      modifier(anpa).     modifier(akesi).    modifier(ale).
-modifier(ante).     modifier(awen).     modifier(ijo).      modifier(ike).
-modifier(insa).     modifier(jaki).     modifier(jan).      modifier(jelo).
-modifier(jo).       modifier(kala).     modifier(kalama).   modifier(kama).
-modifier(kasi).     modifier(kili).     modifier(kin).      modifier(kiwen).
-modifier(ko).       modifier(kon).      modifier(kule).     modifier(kulupu).
-modifier(kute).     modifier(lape).     modifier(laso).     modifier(lawa).
-modifier(len).      modifier(lete).     modifier(lili).     modifier(linja).
-modifier(lipu).     modifier(loje).     modifier(lon).      modifier(luka).
-modifier(lukin).    modifier(lupa).     modifier(ma).       modifier(mama).
-modifier(mani).     modifier(meli).     modifier(mi).       modifier(mije).
-modifier(moku).     modifier(moli).     modifier(monsuta).  modifier(mun).
-modifier(musi).     modifier(mute).     modifier(namako).   modifier(nasa).
-modifier(nasin).    modifier(nena).     modifier(nimi).     modifier(noka).
-modifier(oko).      modifier(olin).     modifier(open).     modifier(pakala).
-modifier(pali).     modifier(palisa).   modifier(pan).      modifier(pana).
-modifier(pilin).    modifier(pimeja).   modifier(pini).     modifier(pipi).
-modifier(poka).     modifier(poki).     modifier(pona).     modifier(sama).
-modifier(seli).     modifier(selo).     modifier(sewi).     modifier(sijelo).
-modifier(sike).     modifier(sin).      modifier(sinpin).   modifier(sitelen).
-modifier(sona).     modifier(soweli).   modifier(suli).     modifier(suno).
-modifier(supa).     modifier(suwi).     modifier(tan).      modifier(taso).
-modifier(tawa).     modifier(telo).     modifier(tenpo).    modifier(toki).
-modifier(tomo).     modifier(tu).       modifier(unpa).     modifier(uta).
-modifier(utala).    modifier(walo).     modifier(wan).      modifier(waso).
-modifier(wawa).     modifier(weka).     modifier(wile).     modifier(ali).
-modifier(ni).
+modifier(akesi). 	modifier(laso).   	modifier(nasin). 	modifier(sin).
+modifier(ala).   	modifier(lawa).   	modifier(nena).  	modifier(sinpin).
+modifier(ale).   	modifier(len).    	modifier(ni).    	modifier(sitelen).
+modifier(ali).   	modifier(lete).   	modifier(nimi).  	modifier(sona).
+modifier(anpa).  	modifier(lili).   	modifier(noka).  	modifier(soweli).
+modifier(ante).  	modifier(linja).  	modifier(oko).   	modifier(suli).
+modifier(awen).  	modifier(lipu).   	modifier(olin).  	modifier(suno).
+modifier(ijo).   	modifier(loje).   	modifier(open).  	modifier(supa).
+modifier(ike).   	modifier(lon).    	modifier(pakala).	modifier(suwi).
+modifier(insa).  	modifier(luka).   	modifier(pali).  	modifier(tan).
+modifier(jaki).  	modifier(lukin).  	modifier(palisa).	modifier(taso).
+modifier(jan).   	modifier(lupa).   	modifier(pan).   	modifier(tawa).
+modifier(jelo).  	modifier(ma).     	modifier(pana).  	modifier(telo).
+modifier(jo).    	modifier(mama).   	modifier(pilin). 	modifier(tenpo).
+modifier(kala).  	modifier(mani).   	modifier(pimeja).	modifier(toki).
+modifier(kalama).	modifier(meli).   	modifier(pini).  	modifier(tomo).
+modifier(kama).  	modifier(mi).     	modifier(pipi).  	modifier(tu).
+modifier(kasi).  	modifier(mije).   	modifier(poka).  	modifier(unpa).
+modifier(kili).  	modifier(moku).   	modifier(poki).  	modifier(uta).
+modifier(kin).   	modifier(moli).   	modifier(pona).  	modifier(utala).
+modifier(kiwen). 	modifier(monsuta).	modifier(sama).  	modifier(walo).
+modifier(ko).    	modifier(mun).    	modifier(seli).  	modifier(wan).
+modifier(kon).   	modifier(musi).   	modifier(selo).  	modifier(waso).
+modifier(kule).  	modifier(mute).   	modifier(sewi).  	modifier(wawa).
+modifier(kulupu).	modifier(namako). 	modifier(sijelo).	modifier(weka).
+modifier(kute).  	modifier(nasa).   	modifier(sike).  	modifier(wile).
+modifier(lape).  	
+
 
 %% prepositions
-preposition(anpa).  preposition(insa).  preposition(jo).    preposition(lon).
-preposition(poka).  preposition(selo).  preposition(sewi).  preposition(sinpin).
-preposition(tan).   preposition(tawa).
+preposition(anpa).  preposition(poka).  preposition(sinpin).
+preposition(insa).  preposition(selo).  preposition(tan).
+preposition(jo).    preposition(sewi).  preposition(tawa).
+preposition(lon).                       
 
 %% nouns
-noun(ala).          noun(anpa).         noun(ken).          noun(akesi).    
-noun(alasa).        noun(ale).          noun(ali).          noun(ante).
-noun(awen).         noun(esun).         noun(ijo).          noun(ike).
-noun(ilo).          noun(insa).         noun(jaki).         noun(jan).
-noun(jelo).         noun(jo).           noun(kala).         noun(kalama).
-noun(kama).         noun(kasi).         noun(kepeken).      noun(kili).
-noun(kipisi).       noun(kiwen).        noun(ko).           noun(kon).
-noun(kule).         noun(kulupu).       noun(kute).         noun(lape).
-noun(laso).         noun(lawa).         noun(len).          noun(lete).
-noun(lili).         noun(linja).        noun(lipu).         noun(loje).
-noun(luka).         noun(lukin).        noun(lupa).         noun(ma).
-noun(mama).         noun(mani).         noun(meli).         noun(mije).
-noun(moku).         noun(moli).         noun(monsi).        noun(monsuta).
-noun(mu).           noun(mun).          noun(musi).         noun(mute).
-noun(namako).       noun(nanpa).        noun(nasa).         noun(nasin).
-noun(nena).         noun(ni).           noun(nimi).         noun(noka).
-noun(oko).          noun(olin).         noun(ona).          noun(open).
-noun(pakala).       noun(pali).         noun(palisa).       noun(pan).
-noun(pana).         noun(pilin).        noun(pimeja).       noun(pini).
-noun(pipi).         noun(poka).         noun(poki).         noun(pona).
-noun(sama).         noun(seli).         noun(selo).         noun(seme).
-noun(sewi).         noun(sijelo).       noun(sike).         noun(sin).
-noun(sinpin).       noun(sitelen).      noun(sona).         noun(soweli).
-noun(suli).         noun(suno).         noun(supa).         noun(suwi).
-noun(tan).          noun(taso).         noun(tawa).         noun(telo).
-noun(tenpo).        noun(toki).         noun(tomo).         noun(tu).
-noun(unpa).         noun(uta).          noun(utala).        noun(walo).
-noun(wan).          noun(waso).         noun(wawa).         noun(weka).
-noun(wile).         noun(mi).           noun(sina).
+noun(akesi).  	  noun(kulupu). 	  noun(nanpa).    noun(sike).
+noun(ala).    	  noun(kute).   	  noun(nasa).     noun(sin).
+noun(alasa).  	  noun(lape).   	  noun(nasin).    noun(sina).
+noun(ale).    	  noun(laso).   	  noun(nena).     noun(sinpin).
+noun(ali).    	  noun(lawa).   	  noun(ni).       noun(sitelen).
+noun(anpa).   	  noun(len).    	  noun(nimi).     noun(sona).
+noun(ante).   	  noun(lete).   	  noun(noka).     noun(soweli).
+noun(awen).   	  noun(lili).   	  noun(oko).      noun(suli).
+noun(esun).   	  noun(linja).  	  noun(olin).     noun(suno).
+noun(ijo).    	  noun(lipu).   	  noun(ona).      noun(supa).
+noun(ike).    	  noun(loje).   	  noun(open).     noun(suwi).
+noun(ilo).    	  noun(luka).   	  noun(pakala).   noun(tan).
+noun(insa).   	  noun(lukin).  	  noun(pali).     noun(taso).
+noun(jaki).   	  noun(lupa).   	  noun(palisa).   noun(tawa).
+noun(jan).    	  noun(ma).     	  noun(pan).      noun(telo).
+noun(jelo).   	  noun(mama).   	  noun(pana).     noun(tenpo).
+noun(jo).     	  noun(mani).   	  noun(pilin).    noun(toki).
+noun(kala).   	  noun(meli).   	  noun(pimeja).   noun(tomo).
+noun(kalama). 	  noun(mi).     	  noun(pini).     noun(tu).
+noun(kama).   	  noun(mije).   	  noun(pipi).     noun(unpa).
+noun(kasi).   	  noun(moku).   	  noun(poka).     noun(uta).
+noun(ken).    	  noun(moli).   	  noun(poki).     noun(utala).
+noun(kepeken).	  noun(monsi).  	  noun(pona).     noun(walo).
+noun(kili).   	  noun(monsuta).	  noun(sama).     noun(wan).
+noun(kipisi). 	  noun(mu).     	  noun(seli).     noun(waso).
+noun(kiwen).  	  noun(mun).    	  noun(selo).     noun(wawa).
+noun(ko).     	  noun(musi).   	  noun(seme).     noun(weka).
+noun(kon).    	  noun(mute).   	  noun(sewi).     noun(wile).
+noun(kule).   	  noun(namako). 	  noun(sijelo).   
 
 %% wordgloss(word, gloss)
 wordgloss(a, "ah!, ha!, uh!, oh!, ooh!, aw!, well!").
