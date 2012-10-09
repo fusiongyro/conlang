@@ -1,12 +1,23 @@
 :- module(blackspeech).
 
-% Ash nazg durbatulûk, ash nazg gimbatul,
-% ash nazg thrakatulûk agh burzum-ishi krimpatul.
+%% The One Ring speech:
+%%
+%% “Ash nazg durbatulûk, ash nazg gimbatul,
+%% ash nazg thrakatulûk agh burzum-ishi krimpatul.”
 speech([ash, nazg, durbatulûk, 
         ash, nazg, gimbatul, 
         ash, nazg, thrakatulûk, agh, burzumishi, krimpatul]).
 
-% lexicon
+%% This will be translated into the following English:
+%% [one, ring, to, rule, them, all, 
+%%  one, ring, to, find, them, 
+%%  one, ring, to, bring, them, all, and, to, bind, them, in, darkness].
+
+%% Many different parse trees are created. I suspect I have made my grammar
+%% rules overly general. However, all of the translations come out
+%% identically.
+
+%% lexicon
 root(ash, one).
 root(lug, tower).
 root(nazg, ring).
@@ -19,7 +30,7 @@ root(thrak, bring).
 conjunction(agh, and).
 preposition(ishi, in).
 
-%% combinators
+%% generic grammatical combinators
 optional([], [])         --> [].
 optional([O|Os], [O|Rs]) --> O, optional(Os, Rs).
 optional([_|Os], Rs)     --> optional(Os, Rs).
@@ -39,18 +50,22 @@ utterance([VP|Rest])   --> verb_phrase(VP), utterance(Rest).
 utterance([])          --> [].
 
 %% basic grammar
+%% conjunctions
 conjunction(conj(Conj, Left, Right)) --> verb_phrase(Left), [Conj], { conjunction(Conj, _) }, verb_phrase(Right).
 
+%% noun phrases: 'modifier noun' or 'noun'
 noun_phrase(np(modifier(Modifier), Noun)) --> noun(Modifier), noun_phrase(Noun).
 noun_phrase(np(Noun)) --> noun(Noun).
 
+%% nouns: root words or nominalized roots ("dark" -> "darkness")
 noun(noun(nominalized(root(Root)))) --> [Noun], { nominalized(Root, Noun) }. 
 noun(noun(root(Noun)))              --> root(Noun).
 
-%% there must be a better way to do this utilizing 'illative' above
+%% prepositional "phrases" (is it still a 'phrase' if it's one word inflected?)
 prepositional_phrase(pp(ishi, Noun)) -->
   [Word], { illative(Root, Word), phrase(noun(Noun), [Root]) }.
 
+%% verb phrases: 'noun verb' or 'prepositional-noun verb'
 verb_phrase(vp(NP, VP)) --> noun_phrase(NP), verb_phrase(VP).
 verb_phrase(vp(PP, VP)) --> prepositional_phrase(PP), verb_phrase(VP).
 
@@ -63,8 +78,6 @@ verb_phrase(vp(verb(Root, Modifiers))) -->
     atom_codes(Tail, ModifierCodes),
     phrase(optional([infinitive, person(_), number(_)], Modifiers), ModifierCodes)
   }.
-
-descriptor(descriptor(NP, VP)) --> noun_phrase(NP), verb_phrase(VP).
 
 root(Noun) --> [Noun], { root(Noun, _) }.
 
@@ -106,7 +119,7 @@ english(verb(Root, [infinitive|Mods]), [to|Rest]) :- english(verb(Root, Mods), R
 %% verb(... [3rd person plural]) --> verb(...) 'them' 'all' 
 english(verb(Root, [person(3), number(pl)|Mods]), Result) :-
   english(verb(Root, Mods), Rest),
-  append(Rest, [them,all], Result).
+  append(Rest, [them, all], Result), !.
   
 %% verb(... [3rd person]) --> verb(...) 'them'
 english(verb(Root, [person(3)|Mods]), Result) :- 
