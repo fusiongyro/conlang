@@ -18,10 +18,10 @@ tpnoun(jan, person, people).
 tpnoun(kili, fruit, fruits).
 tpnoun(lipu, document, documents).
 tpnoun(meli, woman, women).
-tpnoun(ni, this, these).
 tpnoun(soweli, animal, animals).
 
 noun(Noun) --> [Noun], { tpnoun(Noun, _, _) }.
+noun(ni) --> [ni].
 li --> [li].
 
 sentence(X = Y) --> noun(X), li, noun(Y).
@@ -34,6 +34,8 @@ enoun(X, sing) --> { tpnoun(X, Sing, _) }, [Sing].
 enoun(X, pl) --> { tpnoun(X, _, Pl) }, [Pl].
 
 enp(X, Num) --> det(Num), enoun(X, Num).
+enp(ni, sing) --> [this].
+enp(ni, pl) --> [these].
 
 det(_) --> [the].
 det(sing) --> [a].
@@ -43,3 +45,7 @@ det(pl) --> [].
 toki_english(Toki, English) :-
     phrase(sentence(X), Toki),
     phrase(tp2english(X), English).
+
+%% example usage:
+%% toki_english([lipu,li,ijo], English).
+%% toki_english(Toki, [the,document,is,a,thing]).
