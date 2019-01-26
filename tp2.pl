@@ -49,3 +49,41 @@ toki_english(Toki, English) :-
 %% example usage:
 %% toki_english([lipu,li,ijo], English).
 %% toki_english(Toki, [the,document,is,a,thing]).
+
+
+:- begin_tests(ch2).
+
+test(tp2e_the_a, [nondet]) :-
+    toki_english([lipu,li,ijo], English),
+    English = [the,document,is,a,thing].
+test(tp2e_the_the, [nondet]) :-
+    toki_english([lipu,li,ijo], English),
+    English = [the,document,is,the,thing].
+test(tp2e_the_the_pl, [nondet]) :-
+    toki_english([lipu,li,ijo], English),
+    English = [the,documents,are,the,things].
+test(e2tp_the_a, [nondet]) :-
+    toki_english(Toki, [the,document,is,a,thing]),
+    Toki = [lipu,li,ijo].
+test(e2tp_the_the, [nondet]) :-
+    toki_english(Toki, [the,document,is,the,thing]),
+    Toki = [lipu,li,ijo].
+test(e2tp_the_the_pl, [nondet]) :-
+    toki_english(Toki, [the,documents,are,the,things]),
+    Toki = [lipu,li,ijo].
+
+test(tp2e_this, [nondet]) :-
+    toki_english([ni,li,lipu], English),
+    English = [this,is,the,document].
+test(tp2e_these, [nondet]) :-
+    toki_english([ni,li,lipu], English),
+    English = [these,are,the,documents].
+test(e2tp_this, [nondet]) :-
+    toki_english(Toki, [this,is,the,document]),
+    Toki = [ni,li,lipu].
+test(e2tp_these, [nondet]) :-
+    toki_english(Toki, [these,are,the,documents]),
+    Toki = [ni,li,lipu].
+
+:- end_tests(ch2).
+
